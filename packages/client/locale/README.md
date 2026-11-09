@@ -25,6 +25,8 @@ Use `dsh-client-locale` to switch the web GUI between the shipped English, Chine
 <a id="use-this-package"></a>
 ## Use this package
 
+Custom product builds can substitute the application name inside dictionary templates through the [product branding configuration](../../../docs/development.md#product-branding). Substitution precedes parameter interpolation, so user-supplied values and provider names are preserved. The source dictionaries and ordinary DSH builds retain their original text.
+
 Use it wherever the web GUI needs a language switch or translated copy: the shipped settings row covers users, and plugin authors register their own dictionaries. Nothing needs configuration to mount — the package activates with the client tree.
 
 ### Choosing a language

@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { BootPage } from '../src/boot-page.ts'
 
-afterEach(() => { document.body.innerHTML = '' })
+afterEach(() => { document.body.innerHTML = ''; vi.unstubAllEnvs() })
 
 function mount() {
   const el = document.createElement('div')
@@ -31,6 +31,23 @@ describe('BootPage', () => {
     expect(spinner?.style.getPropertyValue('--dsh-boot-arc')).toBe('288deg')
     expect(el.textContent).toContain('Loading plugins…')
     expect(el.textContent).not.toContain('Failed to load plugins')
+  })
+
+  it('uses the build-selected product name before plugins activate', () => {
+    vi.stubEnv('DSH_CLIENT_PRODUCT_NAME', '叙芽岛')
+    const { el } = mount()
+    expect(el.textContent).toContain('叙芽岛')
+    expect(el.textContent).not.toContain('HARNESS')
+    expect(el.querySelector('[data-dsh-boot-spinner]')).not.toBeNull()
+  })
+
+  it('retains the build-selected product name when plugin loading fails', () => {
+    vi.stubEnv('DSH_CLIENT_PRODUCT_NAME', '叙芽岛')
+    const { el, page } = mount()
+    page.fail('Plugin activation failed')
+    expect(el.textContent).toContain('叙芽岛')
+    expect(el.textContent).not.toContain('HARNESS')
+    expect(el.textContent).toContain('Plugin activation failed')
   })
 
   it('lists failed entries', () => {

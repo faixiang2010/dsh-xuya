@@ -1,4 +1,5 @@
 ; Figma logical pixels, independent of the Windows display scale.
+!include /NONFATAL "${INSTALLER_BUILD_DIR}\product-theme.nsh"
 !define INSTALLER_WINDOW_SIZE 600
 !define INSTALLER_BRAND_Y 174
 !define INSTALLER_BRAND_HEIGHT 196
@@ -45,11 +46,15 @@ Var InstallerBorder
 
 ; SetCtlColors accepts only compile-time colors; choose between the two native palettes.
 !macro InstallerControlColors HANDLE
+    !ifmacrodef ProductInstallerControlColors
+        !insertmacro ProductInstallerControlColors ${HANDLE}
+    !else
     ${If} $InstallerTheme == "dark"
         SetCtlColors ${HANDLE} FFFFFF 151517
     ${Else}
         SetCtlColors ${HANDLE} 0F1115 FFFFFF
     ${EndIf}
+    !endif
 !macroend
 
 Function InstallerResolveTheme
@@ -94,4 +99,7 @@ Function InstallerResolveTheme
         StrCpy $InstallerButtonText 0xFFFFFF
         StrCpy $InstallerBorder 0xFFBBC0C8
     ${EndIf}
+    !ifmacrodef ProductInstallerResolveTheme
+        !insertmacro ProductInstallerResolveTheme
+    !endif
 FunctionEnd

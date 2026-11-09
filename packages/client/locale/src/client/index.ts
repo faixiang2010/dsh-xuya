@@ -481,7 +481,10 @@ export class LocaleRuntime {
     const locales = this.dicts.get(ns)
     for (const locale of chain) {
       const value = locales?.get(localeKey(locale))?.[key]
-      if (value !== undefined) return value
+      if (value !== undefined) {
+        const productName = process.env.DSH_CLIENT_PRODUCT_NAME
+        return productName === undefined ? value : value.replaceAll('DeepSeek Harness', productName)
+      }
     }
     return undefined
   }

@@ -1,4 +1,5 @@
 import { defineConfig } from 'tsdown'
+import { readProductBrand } from '../../scripts/product-brand.mjs'
 import { build } from 'vite'
 import { fileURLToPath } from 'node:url'
 import { readFileSync } from 'node:fs'
@@ -30,7 +31,17 @@ const clientVersion = clientEnvironment.DSH_CLIENT_VERSION
 if (clientVersion === undefined) throw new Error('desktop build: the client environment carries no DSH_CLIENT_VERSION')
 
 /** Inline the one public build value the Node entry reads; every other variable stays a runtime lookup. */
-const clientVersionDefine = { 'process.env.DSH_CLIENT_VERSION': JSON.stringify(clientVersion) }
+const productBrand = readProductBrand()
+const desktopBrand = productBrand === undefined ? undefined : {
+  name: productBrand.name, manualUpdates: productBrand.manualUpdates,
+  lightBackground: productBrand.lightBackground, darkBackground: productBrand.darkBackground,
+  windowsIcon: 'product-icon.png', windowsTrayIcon: productBrand.windowsTrayIcon === undefined ? undefined : 'product-tray.ico',
+}
+const brandDefine = { '__DSH_PRODUCT_BRAND__': desktopBrand === undefined ? 'undefined' : JSON.stringify(desktopBrand) }
+const clientVersionDefine = {
+  'process.env.DSH_CLIENT_VERSION': JSON.stringify(clientVersion),
+  ...brandDefine,
+}
 
 export default defineConfig([
   {
@@ -57,11 +68,18 @@ export default defineConfig([
     plugins: [packagedImportsPlugin(mainProcessImports)],
     define: clientVersionDefine,
     onSuccess: async () => {
+      if (productBrand !== undefined) {
+        const { copyFile } = await import('node:fs/promises')
+        await copyFile(productBrand.windowsIcon, new URL('./lib/product-icon.png', import.meta.url))
+        if (productBrand.windowsTrayIcon !== undefined) await copyFile(productBrand.windowsTrayIcon, new URL('./lib/product-tray.ico', import.meta.url))
+      }
       await build({
         configFile: false,
         plugins: [{
           name: 'desktop-shell-assets',
           async generateBundle() {
+            this.emitFile({ type: 'asset', fileName: 'product-theme.css', source: productBrand?.desktopStyles === undefined ? '' : await readFile(productBrand.desktopStyles) })
+            if (productBrand?.welcomeLogo !== undefined) this.emitFile({ type: 'asset', fileName: 'product-brand.svg', source: await readFile(productBrand.welcomeLogo) })
             for (const name of ['design-platform.css', 'brand-font.css', 'montserrat-regular.woff2', 'montserrat-light.woff2', 'montserrat-medium.woff2', 'Montserrat-OFL.txt']) {
               this.emitFile({
                 type: 'asset',
@@ -73,7 +91,7 @@ export default defineConfig([
         }],
         root: fileURLToPath(new URL('.', import.meta.url)),
         esbuild: { jsx: 'automatic' },
-        define: { 'process.env.NODE_ENV': JSON.stringify('production') },
+        define: { 'process.env.NODE_ENV': JSON.stringify('production'), ...brandDefine },
         build: {
           outDir: 'lib/welcome',
           emptyOutDir: true,
@@ -100,6 +118,7 @@ export default defineConfig([
     // Sandboxed Electron preloads run as CommonJS even though the application package is ESM.
     entry: { [name]: `lib/types/${name}.js` },
     plugins: [packagedImportsPlugin(preloadImports)],
+    define: brandDefine,
     outDir: 'lib',
     format: 'cjs' as const,
     codeSplitting: false,

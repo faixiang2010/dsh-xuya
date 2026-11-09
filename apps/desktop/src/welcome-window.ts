@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { app, BrowserWindow, ipcMain, type BrowserWindowConstructorOptions, type IpcMainInvokeEvent } from 'electron'
 import type { DesktopLocale } from './locale.ts'
 import { WELCOME_IPC, type WelcomeOperations } from './welcome-api.ts'
+import { desktopProductBrand } from './product-brand.ts'
 
 /**
  * Resolve the fixed-size welcome window's native material and controls.
@@ -24,6 +25,7 @@ export function welcomeWindowOptions(platform: NodeJS.Platform, locale: DesktopL
     fullscreenable: false,
     show: false,
     title: locale.messages.welcomeTitle,
+    ...(desktopProductBrand() === undefined ? {} : { icon: fileURLToPath(new URL('./product-icon.png', import.meta.url)) }),
     backgroundColor: platform === 'darwin' || platform === 'win32' ? '#00000000' : '#FFFFFF',
     ...(platform === 'darwin' ? {
       titleBarStyle: 'hidden',
