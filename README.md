@@ -30,6 +30,38 @@ pnpm dsh web
 
 For full run/development instructions, see the official documentation: <https://deepseek-harness.github.io/deepseek-harness/>
 
+## Brand switching (original ↔ xuya customization)
+
+This repository shares one build output directory (`apps/web/dist/`) with the companion xuya customization project. **Brand information (page title, icons, product name) is baked into the dist at build time**, not read dynamically at runtime. Which brand appears depends on who built dist last.
+
+### Switch to DSH original brand
+
+From **this repository's root**:
+
+```powershell
+# Clear any lingering brand config environment variable
+$env:DSH_BRAND_CONFIG = $null
+# Rebuild WITHOUT brand injection
+pnpm run build:artifacts
+pnpm dsh web
+```
+
+The browser title shows **DSH Local Build**.
+
+### Switch to xuya brand
+
+Run from the companion customization project — its script automatically sets `DSH_BRAND_CONFIG` and rebuilds:
+
+```powershell
+pnpm run start:web
+```
+
+The browser title shows **叙芽岛**.
+
+### Why rebuild is required
+
+Both projects write to the same `apps/web/dist/`. If you previously ran xuya's `start:web`, the dist contains "叙芽岛". Running `pnpm dsh web` directly will serve that stale dist. You **must** rebuild after clearing `DSH_BRAND_CONFIG` to restore the original brand. No session data is affected — only the frontend static assets are regenerated.
+
 ## License
 
 [MIT](LICENSE). Third-party dependencies and their licenses are disclosed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
