@@ -58,6 +58,16 @@ pnpm run typecheck
 
 <a id="typescript-project-layout"></a>
 
+<a id="product-branding"></a>
+
+### 产品品牌定制
+
+自定义 Web 与桌面构建时，将 `DSH_BRAND_CONFIG` 设为 JSON 文件的绝对路径。[ProductBrand](../scripts/product-brand.d.mts) 列出了配置字段；素材路径相对于该文件解析。无效或缺失的素材会终止构建。不设置此变量时，构建保留 DSH 展示。品牌构建嵌入标题、应用自有词典中的产品名和启动配色，保留模型与供应商名称及用户数据。
+
+可选的运行时 UI 包和配置补丁会在桌面运行时完整性清单生成前复制到准备目录。UI 包必须包含构建后的 `lib` 目录；补丁将其组合到 Web bundle 中。桌面品牌配置调整展示名称与素材，可选项包括托盘图标、安装器 PNG 目录及 NSIS 主题宏（`ProductInstallerResolveTheme` 和 `ProductInstallerControlColors HANDLE`）；未设置的覆盖项沿用默认值。`manualUpdates` 阻止官方更新检查。保留已有安装时，保持 Electron 内部名称、应用标识和数据路径稳定。
+
+运行未打包的桌面程序时，`DSH_DESKTOP_PATCH` 可指定一个额外的 Loader 补丁文件，在 profile 配置之后应用。文件缺失会终止启动。定制插件、素材、构建命令和兼容记录放在独立定制项目中。
+
 ### TypeScript 项目布局
 
 仓库使用相互隔离的 Host 与 Client aggregate。普通包只登记进其中一个 aggregate；Host 包进入 `tsconfig.host.json`，Client 包进入 `tsconfig.client.json`；`host/webserver`、`compaction/compaction` 与 `typert/registry` 三个包被两个 aggregate 同时引用，作为共享 leaf，让两侧对同一份源码做类型检查。

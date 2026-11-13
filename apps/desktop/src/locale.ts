@@ -1,5 +1,7 @@
 /** Typed shell copy for every shipped language owned by the Electron shell. */
 
+import { desktopProductBrand, productMessages } from './product-brand.ts'
+
 export const en = {
   cliCommandMenu: 'Manage dsh Command…',
   cliCommandTitle: 'Manage dsh Command',
@@ -1539,12 +1541,13 @@ export interface DesktopLocale {
 
 /** Resolve Electron's locale to one shipped Desktop dictionary. */
 export function resolveDesktopLocale(locale: string): DesktopLocale {
+  const brand = desktopProductBrand()
   const primary = locale.toLowerCase().split('-')[0]
   if (primary !== undefined && Object.hasOwn(dictionaries, primary)) {
     const id = primary as keyof typeof dictionaries
-    return { id: id === 'zh' ? 'zh-CN' : id, messages: dictionaries[id] }
+    return { id: id === 'zh' ? 'zh-CN' : id, messages: brand === undefined ? dictionaries[id] : productMessages(dictionaries[id], brand.name) }
   }
-  return { id: 'en', messages: en }
+  return { id: 'en', messages: brand === undefined ? en : productMessages(en, brand.name) }
 }
 
 /**

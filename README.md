@@ -1,4 +1,13 @@
-# DeepSeek Harness
+# DeepSeek Harness (xuya 二次开发版)
+
+> **本项目说明**
+>
+> 本仓库是基于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的二次开发版本，**并非官方仓库**。
+>
+> - 本仓库地址：<https://github.com/faixiang2010/dsh-xuya>
+> - 需配合配套插件使用：[dsh-plugin / deepseek-harness-xuya](https://github.com/faixiang2010/dsh-plugin/tree/main/deepseek-harness-xuya)
+>
+> 二次开发内容主要涉及：产品品牌定制（product-brand）、桌面端安装包与欢迎页、Web 启动页、主题与多语言文案、构建脚本等。
 
 English | [中文](README.zh.md)
 

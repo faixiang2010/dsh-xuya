@@ -1,3 +1,4 @@
+import { readProductBrand } from './product-brand.mjs'
 import { createHash } from 'node:crypto'
 import { execFileSync, spawnSync } from 'node:child_process'
 import {
@@ -191,7 +192,14 @@ export function resolveClientBuildEnvironment(
   environment: NodeJS.ProcessEnv,
   profile: string | undefined = environment[CLIENT_BUILD_PROFILE_SELECTOR],
 ): ClientBuildEnvironment {
-  if (profile === undefined) return clientBuildEnvironment(environment)
+  const brand = readProductBrand(environment)
+  const presentation = brand === undefined ? {} : {
+    DSH_CLIENT_TITLE: brand.name,
+    DSH_CLIENT_PRODUCT_NAME: brand.name,
+    DSH_CLIENT_BOOT_LIGHT: brand.lightBackground,
+    DSH_CLIENT_BOOT_DARK: brand.darkBackground,
+  }
+  if (profile === undefined) return { ...clientBuildEnvironment(environment), ...presentation }
   if (profile === 'official' || profile === 'local') {
     const commitHash = environment[CLIENT_COMMIT_HASH_VARIABLE]
     const version = environment[CLIENT_VERSION_VARIABLE]
@@ -208,6 +216,7 @@ export function resolveClientBuildEnvironment(
         DSH_CLIENT_BUILD_PROFILE: 'local',
         ...(environment.DSH_CLIENT_GIT_DIRTY === 'true' ? { DSH_CLIENT_GIT_DIRTY: 'true' } : {}),
       }),
+      ...presentation,
     }
   }
   throw new Error(`unknown client build profile ${JSON.stringify(profile)}; expected "official" or "local"`)

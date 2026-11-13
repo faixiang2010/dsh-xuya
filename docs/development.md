@@ -54,6 +54,16 @@ Setup is complete when `pnpm run typecheck` exits successfully.
 
 ## Contributor reference
 
+<a id="product-branding"></a>
+
+### Product branding
+
+Set `DSH_BRAND_CONFIG` to an absolute JSON file path for a custom Web and Desktop build. [ProductBrand](../scripts/product-brand.d.mts) lists the fields; artwork paths resolve relative to that file. Invalid or missing artwork stops the build. Without this variable, builds retain DSH presentation. Brand builds embed the title, application-owned dictionary name and boot palette; they leave model/provider names and user data unchanged.
+
+The optional runtime UI package and patch are copied into the prepared Desktop runtime before its integrity inventory is sealed. The UI package must contain its built `lib` directory; the patch composes it into the Web bundle. Desktop branding changes display names and artwork, including an optional tray icon, installer PNG directory and NSIS theme macros (`ProductInstallerResolveTheme` and `ProductInstallerControlColors HANDLE`); absent overrides retain defaults. `manualUpdates` prevents official update checks. Keep Electron's internal name, application identifier and data paths stable when retaining existing installations.
+
+For an unpackaged Desktop run, `DSH_DESKTOP_PATCH` selects one additional Loader patch file, applied after the profile configuration. Missing files stop startup. Keep custom plugins, assets, build commands and compatibility records in the separate customization project.
+
 ### TypeScript project layout
 
 The repository uses isolated Host and Client aggregates. An ordinary package is registered in exactly one aggregate: Host packages in `tsconfig.host.json` and Client packages in `tsconfig.client.json`; three packages (`host/webserver`, `compaction/compaction`, `typert/registry`) are referenced by both aggregates as shared leaves so each side type-checks the same source.

@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
+import { readProductBrand } from '../../scripts/product-brand.mjs'
 import type { Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import { clientBuildEnvironmentDefines } from '../../scripts/client-build-environment.ts'
@@ -26,6 +27,7 @@ function clientDocumentTitle(): Plugin {
     name: 'dsh-client-document-title',
     transformIndexHtml(html) {
       return html.replace('<title>DSH Local Build</title>', `<title>${title}</title>`)
+        .replace('content="DSH"', `content="${escapeHtmlText(readProductBrand()?.shortName ?? 'DSH')}"`)
     },
   }
 }
@@ -166,7 +168,10 @@ function npmPackageOf(id: string): string | undefined {
   return first
 }
 
+const productBrand = readProductBrand()
+
 export default defineConfig({
+  publicDir: productBrand?.assetsDirectory ?? 'public',
   // Relative asset URLs: preview.html mounts the same output under any base
   // directory, and the served index resolves identically from the site root.
   base: './',
