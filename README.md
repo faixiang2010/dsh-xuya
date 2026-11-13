@@ -1,86 +1,35 @@
 # DeepSeek Harness (xuya 二次开发版)
 
-> **本项目说明**
->
-> 本仓库是基于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的二次开发版本，**并非官方仓库**。
->
-> - 本仓库地址：<https://github.com/faixiang2010/dsh-xuya>
-> - 需配合配套插件使用：[dsh-plugin / deepseek-harness-xuya](https://github.com/faixiang2010/dsh-plugin/tree/main/deepseek-harness-xuya)
->
-> 二次开发内容主要涉及：产品品牌定制（product-brand）、桌面端安装包与欢迎页、Web 启动页、主题与多语言文案、构建脚本等。
-
 English | [中文](README.zh.md)
 
-DeepSeek Harness (`dsh`) is an open-source agent harness developed by [DeepSeek AI](https://deepseek.com).
+> **About this repository**
+>
+> This repository is a **secondary development fork** based on [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`dsh`). It is **not the official repository**.
+>
+> - This repository: <https://github.com/faixiang2010/dsh-xuya>
+> - Must be used together with the companion plugin: [dsh-plugin / deepseek-harness-xuya](https://github.com/faixiang2010/dsh-plugin/tree/main/deepseek-harness-xuya)
+>
+> For the original project description, please refer to the official documentation: <https://deepseek-harness.github.io/deepseek-harness/>
 
-It is built on an **everything-is-a-plugin** architecture and powered by [Cordis](https://github.com/cordiverse/cordis), whose design is described in [_A Programming Paradigm for Spatiotemporal Composability_](https://arxiv.org/abs/2608.25512).
+## Modifications in this fork
 
-Documentation: [https://deepseek-harness.github.io/deepseek-harness/](https://deepseek-harness.github.io/deepseek-harness/)
+This fork mainly customizes product branding and presentation on top of the official codebase:
 
-## Developer preview
-
-DeepSeek Harness is in _developer preview_ and iterating rapidly. **THERE WILL BE COMPATIBILITY-BREAKING CHANGES.**
-
-Review the [safety notice](SAFETY.md) before running the project.
+- **Product brand customization** — new `product-brand` module ([apps/desktop/src/product-brand.ts](apps/desktop/src/product-brand.ts), [scripts/product-brand.mjs](scripts/product-brand.mjs)): injects product name, window background colors, and Windows icons/tray icons at build time, with corresponding test specs.
+- **Desktop app** — installer theme and locales, welcome page/window, launch flow, and update coordinator adjusted for the custom brand ([apps/desktop](apps/desktop)).
+- **Web UI** — boot page, theme, and locale copy adjusted to use the custom product name ([packages/client](packages/client)).
+- **Build scripts** — build and packaging scripts pass through the brand configuration ([scripts/build.ts](scripts/build.ts), [scripts/client-build-environment.ts](scripts/client-build-environment.ts), [apps/web/vite.config.ts](apps/web/vite.config.ts)).
 
 ## Run
 
-### Run from `npm`
-
-Install `Node.js`, then run:
-
 ```sh
-npx @deepseek-ai/dsh web
-```
-
-The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it in the default browser for a local launch. An SSH launch only prints the host URL because the SSH client or editor owns the local forwarded address. Pass `--no-open` to run the server without opening a browser. See [Web UI guide](docs/user/guide/index.md).
-
-### Run from source
-
-To run from a repository checkout:
-
-```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
 pnpm install
 pnpm run build
 pnpm dsh web
 ```
 
-`pnpm run build` prepares the repository artifacts. `pnpm dsh web` uses those built artifacts without rebuilding.
-
-## Community and support
-
-- Submit feedback or bug reports through [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions).
-- Add the [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic to your plugin repository for discoverability.
-- Join <a href="https://discord.gg/4MrtZUhpxg">DeepSeek Harness Discord community</a>.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Development
-
-Start with the [development guide](docs/development.md) and [architecture documentation](docs/architecture.md).
-
-`pnpm run dev:web` builds, serves, and rebuilds client bundles on source edits in one terminal, and `make help` lists the matching Make targets for Web and Desktop; the guide's application commands section owns the full table.
-
-For agents, follow [AGENTS.md](AGENTS.md).
-
-## Citation
-
-```bibtex
-@misc{deepseek-harness2026,
-  title={DeepSeek Harness: Everything is a Plugin},
-  author={DeepSeek-AI},
-  year={2026},
-  publisher={GitHub},
-  howpublished={\url{https://github.com/deepseek-ai/deepseek-harness}},
-}
-```
+For full run/development instructions, see the official documentation: <https://deepseek-harness.github.io/deepseek-harness/>
 
 ## License
 
-[MIT](LICENSE)
-
-Third-party dependencies and their licenses are disclosed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+[MIT](LICENSE). Third-party dependencies and their licenses are disclosed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
